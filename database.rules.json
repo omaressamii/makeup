@@ -1,0 +1,123 @@
+{
+  "rules": {
+    "users": {
+      "$uid": {
+        ".read": "auth != null",
+        ".write": "auth != null && (auth.uid === $uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "artists": {
+      ".read": true,
+      ".indexOn": ["status", "rating", "experienceYears", "userId", "isVerified", "startingPrice"],
+      "$artistId": {
+        ".write": "auth != null && (root.child('artists').child($artistId).child('userId').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin' || !data.exists())"
+      }
+    },
+    "clients": {
+      "$clientId": {
+        ".read": "auth != null && (auth.uid === $clientId || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && (auth.uid === $clientId || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "categories": {
+      ".read": true,
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "services": {
+      ".read": true,
+      ".indexOn": ["artistId", "categoryId", "isActive"],
+      "$serviceId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || (newData.exists() ? (root.child('artists').child(newData.child('artistId').val()).child('userId').val() === auth.uid) : (root.child('artists').child(data.child('artistId').val()).child('userId').val() === auth.uid)))"
+      }
+    },
+    "portfolio": {
+      ".read": true,
+      ".indexOn": ["artistId", "categoryId"],
+      "$portfolioId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || (newData.exists() ? (root.child('artists').child(newData.child('artistId').val()).child('userId').val() === auth.uid) : (root.child('artists').child(data.child('artistId').val()).child('userId').val() === auth.uid)))"
+      }
+    },
+    "availability": {
+      ".read": true,
+      "$artistId": {
+        ".write": "auth != null && (root.child('artists').child($artistId).child('userId').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "bookings": {
+      ".read": "auth != null",
+      ".indexOn": ["artistId", "clientId", "date", "status"],
+      "$bookingId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || (newData.exists() ? (newData.child('clientId').val() === auth.uid || root.child('artists').child(newData.child('artistId').val()).child('userId').val() === auth.uid) : (data.child('clientId').val() === auth.uid || root.child('artists').child(data.child('artistId').val()).child('userId').val() === auth.uid)))"
+      }
+    },
+    "bookingsByArtist": {
+      "$artistId": {
+        ".read": "auth != null && (root.child('artists').child($artistId).child('userId').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null"
+      }
+    },
+    "bookingsByClient": {
+      "$clientId": {
+        ".read": "auth != null && (auth.uid === $clientId || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && (auth.uid === $clientId || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "reviews": {
+      ".read": true,
+      ".indexOn": ["artistId", "clientId", "rating"],
+      "$reviewId": {
+        ".write": "auth != null && (root.child('users').child(auth.uid).child('role').val() === 'admin' || (newData.exists() ? newData.child('clientId').val() === auth.uid : data.child('clientId').val() === auth.uid))"
+      }
+    },
+    "reviewsByArtist": {
+      ".read": true,
+      "$artistId": {
+        ".write": "auth != null"
+      }
+    },
+    "favorites": {
+      "$clientId": {
+        ".read": "auth != null && auth.uid === $clientId",
+        ".write": "auth != null && auth.uid === $clientId"
+      }
+    },
+    "conversations": {
+      ".read": "auth != null",
+      "$conversationId": {
+        ".write": "auth != null && (data.child('participants').child(auth.uid).val() === true || newData.child('participants').child(auth.uid).val() === true || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "messages": {
+      "$conversationId": {
+        ".read": "auth != null && (root.child('conversations').child($conversationId).child('participants').child(auth.uid).val() === true || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null && (root.child('conversations').child($conversationId).child('participants').child(auth.uid).val() === true || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "notifications": {
+      "$userId": {
+        ".read": "auth != null && (auth.uid === $userId || root.child('users').child(auth.uid).child('role').val() === 'admin')",
+        ".write": "auth != null"
+      }
+    },
+    "reports": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$reportId": {
+        ".write": "auth != null && (newData.child('reporterId').val() === auth.uid || root.child('users').child(auth.uid).child('role').val() === 'admin')"
+      }
+    },
+    "settings": {
+      ".read": true,
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "announcements": {
+      ".read": true,
+      ".write": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'"
+    },
+    "auditLogs": {
+      ".read": "auth != null && root.child('users').child(auth.uid).child('role').val() === 'admin'",
+      "$logId": {
+        ".write": "auth != null"
+      }
+    }
+  }
+}

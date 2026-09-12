@@ -1,0 +1,38 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*')
+        && request.resource.size < 10 * 1024 * 1024;
+    }
+
+    // Artist public portfolio and profile images
+    match /artists/{artistId}/{folder}/{fileName} {
+      allow read: if true;
+      allow write: if isOwner(artistId) && isValidImage();
+      allow delete: if isOwner(artistId);
+    }
+
+    // Client profile pictures
+    match /clients/{clientId}/{fileName} {
+      allow read: if true;
+      allow write: if isOwner(clientId) && isValidImage();
+      allow delete: if isOwner(clientId);
+    }
+
+    // General app assets
+    match /general/{fileName} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Makeup Artist Marketplace",
+  "description": "Production-ready Makeup Artist Marketplace platform connecting artists, clients, and administrators with real-time bookings, portfolios, messaging, and reviews powered by Firebase.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

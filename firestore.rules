@@ -1,0 +1,10 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Platform strictly enforces Realtime Database as primary database.
+    // Deny all Firestore reads/writes by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
